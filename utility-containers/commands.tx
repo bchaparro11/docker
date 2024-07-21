@@ -1,0 +1,7 @@
+docker run -it node
+docker run -it -d node
+docker container attach container-name-or-id
+docker exec container-name npm init
+docker exec -it container-name-or-id npm init
+docker run -it node container-name-or-id npm init
+docker run -it -v /home/user/l_docker_compose/utility-containers:/app node-util npm init
