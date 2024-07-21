@@ -1,0 +1,7 @@
+docker compose up
+docker compose up -d
+docker compose down --> This stop a deletes containers but volumes
+docker compose down -v --> This does deletes volumes
+docker logs container-id or container-name
+docker compose up --build
+docker compose build

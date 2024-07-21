@@ -1,0 +1,58 @@
+# By default when bringing down the containers are removed
+# By default everything is executed in detached mode
+# By default docker-compose creates only one network and add all container to that network
+version: "3.8"
+services:
+  mongodb: # Even tough the names assigned by Docker to the containers are different to this ones, I could use this simple ones to use inside every code
+    image: "mongo"
+    volumes:
+      - data:/data/db
+    # environment:
+      # MONGO_INITDB_ROOT_USERNAME: bch # Using key-value pairs I don't need dashes
+      # MONGO_INITDB_ROOT_PASSWORD: secret
+      # - MONGO_INITDB_ROOT_USERNAME=bch
+    container_name: mongodb
+    env_file:
+      - ./env/mongo.env
+    # networks: # If I add the network here, docker-compose will add this container to the default and custome network
+    #   - goals-net
+  backend:
+    # image: "goals-backend" # The image must exist preivously to this command to use this statement here
+    # build: ./backend # I could use this way if I have just one docker file called in the default way, say, Dockerfile
+    build: # If the docker file isn't named Dockerfile, I could use the following approach
+    # Right here the docker file is also named in the default way, but I use the following approach to show the long to do it
+      context: ./backend
+      dockerfile: Dockerfile
+      # args: # Right here I could also use args if the Dockerfile is also utilizing args
+      #   some-arg: some-value
+    ports:
+      - "80:80" # The first one is the outside port and the second one is the internal
+      # - "3000:3000" # I could also expose more than one port
+    volumes:
+      - logs:/app/logs
+      - ./backend:/app #BindMount. These BindMounts should be called using an absolute path in docker run
+      - /app/node_modules
+    env_file:
+      - ./env/backend.env
+    # This doesn't exist in docker run. It serves us to force backend container to wait for mongodb to be executed firstly
+    depends_on: 
+      - mongodb
+      # - ... # One container could depend on multiple services
+  frontend:
+    build:
+      context: ./frontend # The image is just be recreated trough this statement if something changed inside the code
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+
+# Named volumes should be listed right here. Every container could use this same volume
+# Anonymous and BindMount volumes don't need to be specified right here
+volumes:
+  data:
+  logs:
