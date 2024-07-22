@@ -1,3 +1,5 @@
+Not using docker compose
+
 docker run -it node
 docker run -it -d node
 docker container attach container-name-or-id
@@ -5,3 +7,17 @@ docker exec container-name npm init
 docker exec -it container-name-or-id npm init
 docker run -it node container-name-or-id npm init
 docker run -it -v /home/user/l_docker_compose/utility-containers:/app node-util npm init
+docker run -it -v /home/user/l_docker_compose/utility-containers:/app node-util init --> It could be acquired using ENTRYPOINT
+docker run -it -v /home/user/l_docker_compose/utility-containers:/app node-util install
+docker run -it -v /home/brian/l_docker_compose/utility-containers:/app avoidnpm install express
+docker run -it -v /home/brian/l_docker_compose/utility-containers:/app avoidnpm install express --save
+
+docker run --rm -it -v /home/brian/l_docker_compose/utility-containers:/app avoidnpm init --> To avoid removing the containers also trough the command docker container prune
+
+Using docker compose (This is using ENTRYPOINT)
+
+docker compose up --> Doesn't work
+docker compose up init --> Doesn't work
+docker compose exec -it service-name bash
+docker compose run service-name init --> The last init comes from the command "npm init". This command will only give us the opportunity to run one container if we have multiple containers. This doesn't remove the containers as "docker compose down". Don't forget that this commands executes "npm init" and then stops immediately.
+docker compose run --rm service-name init --> To remove the container automatically
